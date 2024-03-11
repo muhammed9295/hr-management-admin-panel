@@ -9,9 +9,9 @@ import {User} from "../models/user.model.js";
 const registerUser = asyncHandler(async(req,res)=>{
     const {username, email, password} = req.body;
 
-    if([username, email, password].some((field)=>field?.trim() === "")){
-        throw new apiError(400, "All fields are required")
-    }
+    // if([username, email, password].some((field)=>field?.trim() === "")){
+    //     throw new apiError(400, "All fields are required")
+    // }
 
     const existedUser = await User.findOne({
         $or: [{username}, {email}]
