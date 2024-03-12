@@ -85,6 +85,18 @@ const loginUser = asyncHandler(async (req, res) => {
     secure: true,
   };
 
+  // const options = {
+  //   httpOnly: true,
+  //   secure: false, // Set to false if you're not using HTTPS
+  //   sameSite: 'strict', // or 'lax' or 'none' depending on your needs
+  //   domain: 'http://localhost:5173', // Set this to your domain
+  //   path: '/',
+  //   maxAge: 86400000 ,
+  // };
+
+//   res.cookie('accessToken', accessToken, options);
+//  res.cookie('refreshToken', refreshToken, options); 
+
   return res
     .status(200)
     .cookie("accessToken", accessToken, options)
@@ -103,7 +115,8 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
-    await User.findByIdAndUpdate(
+  
+  await User.findByIdAndUpdate(
       req.user._id,
       {
         $unset: {
