@@ -35,10 +35,12 @@ app.use(cookieParser());
 
 // Route Import
  import userRouter from "./routes/user.route.js"
+ import employeesRouter from "./routes/employee.route.js"
 // Route Import
 
 // Route declaration
 app.use("/api/v1/users", userRouter)
+app.use("/api/v1/employees", employeesRouter)
 // Route declaration
 
 export { app };
