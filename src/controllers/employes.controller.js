@@ -76,4 +76,23 @@ const getEmployees = asyncHandler(async (req, res) => {
     .json(new apiResponse(200, employees, "Employee fetched successfully"));
 });
 
-export { addEmployees, getEmployees };
+const getSingleEmployee = asyncHandler(async(req, res)=>{
+  const {id} = req.params
+  
+  if(!id?.trim()){
+    throw new apiError(400, "Employee id is required");
+  }
+
+  const singleEmployee = await Employee.findById(id);
+
+  if(!singleEmployee){
+    throw new apiError(404, "Employee not found");
+  };
+
+  return res
+        .status(200)
+        .json(new apiResponse(200, singleEmployee, "Employee found successfully"));
+
+})
+
+export { addEmployees, getEmployees, getSingleEmployee };
