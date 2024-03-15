@@ -64,35 +64,113 @@ const addEmployees = asyncHandler(async (req, res) => {
 });
 
 const getEmployees = asyncHandler(async (req, res) => {
+  const employees = await Employee.find({});
 
-    const employees = await Employee.find({});
+  if (!employees) {
+    throw new apiError(500, "Something went wrong while fetching employees");
+  }
 
-    if(!employees) {
-        throw new apiError(500, "Something went wrong while fetching employees");
-    }
-
-    return res
+  return res
     .status(200)
     .json(new apiResponse(200, employees, "Employee fetched successfully"));
 });
 
-const getSingleEmployee = asyncHandler(async(req, res)=>{
-  const {id} = req.params
-  
-  if(!id?.trim()){
+const getSingleEmployee = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  if (!id?.trim()) {
     throw new apiError(400, "Employee id is required");
   }
 
   const singleEmployee = await Employee.findById(id);
 
-  if(!singleEmployee){
+  if (!singleEmployee) {
     throw new apiError(404, "Employee not found");
-  };
+  }
 
   return res
-        .status(200)
-        .json(new apiResponse(200, singleEmployee, "Employee found successfully"));
+    .status(200)
+    .json(new apiResponse(200, singleEmployee, "Employee found successfully"));
+});
 
-})
+const updateSingleEmployee = asyncHandler(async (req, res) => {
+  const {
+    id,
+    firstName,
+    lastName,
+    qualification,
+    yearOfExperience,
+    department,
+    email,
+    phoneNumber,
+  } = req.body;
 
-export { addEmployees, getEmployees, getSingleEmployee };
+  const avatarLocalPath = req.file?.path;
+
+  const newAvatar = !avatarLocalPath
+    ? ""
+    : await uploadOnCloudinary(avatarLocalPath);
+
+  const updatedFields = {
+    id,
+    firstName,
+    lastName,
+    qualification,
+    yearOfExperience,
+    department,
+    email,
+    phoneNumber,
+    avatar: newAvatar.url,
+  };
+  Object.keys(updatedFields).forEach(
+    (key) =>
+      (updatedFields[key] === "" || undefined) && delete updatedFields[key]
+  );
+
+  const employee = await Employee.findByIdAndUpdate(
+    id,
+    {
+      $set: updatedFields,
+    },
+    { new: true }
+  );
+
+  return res
+    .status(200)
+    .json(new apiResponse(200, employee, "Employee updated"));
+});
+
+const deleteSingleEmployee = asyncHandler(async (req, res) => {
+  
+  try {
+    //Get the id from the url params
+    const { id } = req.params;
+  
+    // Validate the id
+    if (!id?.trim()) {
+      throw new apiError(400, "Employee id is required");
+    }
+  
+    //Find the id on the Employee database and delete it
+    const employee = await Employee.findByIdAndDelete(id);
+  
+    if (!employee) {
+      throw new apiError(404, "Employee not found");
+    }
+    // Send the response
+    return res
+      .status(200)
+      .json(new apiResponse(200, employee, "Employee deleted successfully"));
+  } catch (error) {
+    console.error("Error deleting employee:", error);
+    res.status(500).send({ message: "Error deleting employee" });
+  }
+});
+
+export {
+  addEmployees,
+  getEmployees,
+  getSingleEmployee,
+  updateSingleEmployee,
+  deleteSingleEmployee,
+};
