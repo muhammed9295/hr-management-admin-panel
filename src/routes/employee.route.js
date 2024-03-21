@@ -10,6 +10,6 @@ router.route("/add-employee").post(verifyJWT, upload.fields([{name:"avatar", max
 router.route("/get-employees").get(verifyJWT, getEmployees)
 router.route("/get-profile/:id").get(verifyJWT, getSingleEmployee)
 router.route("/update-profile").patch(verifyJWT, upload.single("avatar"), updateSingleEmployee)
-router.route("/delete-profile/:id").get(verifyJWT, deleteSingleEmployee)
+router.route("/delete-profile/:id").delete(verifyJWT, deleteSingleEmployee)
 
 export default router;
